@@ -1,3 +1,6 @@
+#TODO check all imports, adapt method calls and context manager for model dump
+
+
 import pickle, time, logging
 from warnings import filterwarnings
 filterwarnings(action='ignore')
@@ -8,10 +11,10 @@ from sklearn.metrics import mean_squared_log_error
 
 logging.basicConfig(level = logging.DEBUG)
 
-from utils import BikeRentModeler, rmsle
+from utils import BikeRentPredictor
 
 def main():
-    model_data = BikeRentModeler()
+    model_data = BikeRentPredictor()
     prepped_data = model_data.prepare_data()
     split_dict = model_data.split_data(X = prepped_data['feature_matrix'], 
                                                 y = prepped_data['labels'])
@@ -37,8 +40,8 @@ def main():
         X = X_val
          )
     
-    rmsle_train = rmsle(y_train, pred_X_train).round(2)
-    rmsle_val = rmsle(y_val, pred_X_val).round(2)
+    rmsle_train = model_data.metric_builder(y_train, pred_X_train).round(2)
+    rmsle_val = model_data.metric_builder(y_val, pred_X_val).round(2)
 
     time.sleep(2)
     logging.info(f'The rmsle - score based on training set is: {(rmsle_train).round(2)}')

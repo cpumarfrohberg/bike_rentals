@@ -11,7 +11,7 @@ PATH_INITIAL_DATA = '../data/'
 PATH_TRANSFORMED_DATA = '../artifacts/'
 
 #TODO think about how to apply everything to both train as well as test
-class BikeRentModeler():
+class BikeRentPredictor():
     '''Read, split, transform, fit and predict.'''
 
     #TODO: check syntax attributes (i.e. drop hard-coded attributes)
@@ -19,8 +19,16 @@ class BikeRentModeler():
         self.path_initial = PATH_INITIAL_DATA
         self.path_transformed = PATH_TRANSFORMED_DATA
 
-    #TODO: check syntax placeholders; check return statement! 
-    def prepare_data(self) -> dict:
+    def join_for_EDA(self) -> pd.DataFrame:
+        '''Returns dict with feature matrix and labels as values.'''
+        loadable = ['Xtrain', 'Xval']
+        for data in loadable:
+            df_train, df_val = pd.read_csv("self.path_initial/'%s'.csv", data, index_col=0, parse_dates=True)
+            concatenated = pd.concat(df_train, df_val)
+        return concatenated
+
+    #TODO:  check if empty list is even necessary! statement check syntax placeholders! 
+    def read_for_split(self) -> dict:
         '''Returns dict with feature matrix and labels as values.'''
         loadable = ['Xtrain', 'Xval']
         for data in loadable:
