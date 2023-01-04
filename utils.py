@@ -1,3 +1,26 @@
+'''Class for EDA as well as for making preds.
+@attributes:
+    - path variable for reading in initial datasets (Xtrain.csv and Xval.csv)
+    - path variable for reading in transformed dataset (additional transformations to timestamps: tbd)
+
+@methods:
+    - ".read_for_x()" => loaders of datasets: one for EDA, the other for transformed dataset
+    - ".include_timestamps()" => first transformer: include timestamps
+        => TODO: include hourly vals (especially since current values are not given for a specific time period)
+        => TODO: think of additional FE (e.g. KBinsDiscretizer() or PolynomialFeatures(); note that best submissions to Kaggle don't include that sort of FE...
+    - ".model_fit()": fit a vanilla LinReg()
+        => TODO: do a GridSearchCV() and create pipeline based on selected best params        
+        => TODO: call .make_pipeline(), combining CV with make_pipeline() so as to avoid leakage        
+    - ".predictions()": make predictions on logged labels
+    - ".bring_back_transformer()": unlog predictions
+    - ".goodness_fit()": rmsle of predictions
+    => TODO: check how to implement ".interpolator()"
+    '''
+
+
+
+
+
 import pytest
 
 import pandas as pd
@@ -14,12 +37,13 @@ PATH_TRANSFORMED_DATA = '../artifacts/'
 class BikeRentPredictor():
     '''Read, split, transform, fit and predict.'''
 
-    #TODO: check syntax attributes (i.e. drop hard-coded attributes)
+    #TODO: check syntax attributes (i.e. drop initializer?)
     def __init__(self) -> None:
         self.path_initial = PATH_INITIAL_DATA
         self.path_transformed = PATH_TRANSFORMED_DATA
 
-    def join_for_EDA(self) -> pd.DataFrame:
+    #TODO: check syntax for "parametrized dataload" (i.e. placeholder)
+    def read_for_EDA(self) -> pd.DataFrame:
         '''Returns dict with feature matrix and labels as values.'''
         loadable = ['Xtrain', 'Xval']
         for data in loadable:
@@ -52,6 +76,11 @@ class BikeRentPredictor():
         df['Month'] = df.index.month
         return df
 
+    #TODO implement the following methods
+    def interpolator():
+        '''Fill hourly vals for registered and casual.'''
+        pass
+
     #TODO: check if split is even necessary (data has already been split!).
     # Also: implement manual split based on dates (<=19th and 19th < dates <=30)?
     # def split_timestamp_data(self, X, y) -> dict:
@@ -66,41 +95,34 @@ class BikeRentPredictor():
     #         'y_val': y_val,
     #         }
 
-    def model_fit(self, X_train, y_train):
-        '''Returns fitted Linear ression model.'''
-        linreg = LinearRegression(random_state=42) 
-        linreg.fit(X_train, y_train)
-        return linreg
-
-    def predictions(self, fit_model, X) -> int:
-        '''Returns model predictions.'''
-        Lin_Reg = fit_model
-        return Lin_Reg.predict(X)
-
-    #TODO implement the following methods
-    def interpolator():
-        '''Fill hourly vals for registered and casual.'''
-        pass
-    
-    def metric_builder(predictions) -> np.array:
-        '''Calculates root mean square logged error.'''
-        return np.sqrt(mean_squared_log_error(predictions))
-
     #TODO check np method as well as placeholder
     def label_transformer(y_train, y_val) -> pd.Series:
         '''Transforms labels to logged vals.'''
         labels = [y_train, y_val]
         for label in labels:
-            y_train_logged, y_val_logged = np.log1p('%s', label) - 1
+            y_train_logged, y_val_logged = np.log1p('%s', label) 
         return y_train_logged, y_val_logged
 
-    #TODO check np method as well as placeholder
-    def bring_back_transformer(y_train_logged, y_val_logged):
-        '''Transforms predictions to unlogged vals.'''
-        undone_logged_labels = [y_train_logged, y_val_logged]
-        for logged_label in undone_logged_labels:
-            y_train_unlogged, y_val_unlogged = np.exp('%s', logged_label)
-        return y_train_unlogged, y_val_unlogged
+    def model_fit(self, X_train, y_train_logged) -> LinearRegression():
+        '''Returns fitted Linear Regression (transformed labels).'''
+        linreg = LinearRegression(random_state=42) 
+        fit_model = linreg.fit(X_train, y_train_logged)
+        return fit_model
 
+    def predictions(self, fit_model, X_val) -> np.array:
+        '''Returns model predictions
+        Takes Xval'''
+        predictions_logged = fit_model.predict(X_val) 
+        return predictions_logged
+
+    #TODO check following two np methods
+    def bring_back_transformer(predictions_logged) -> pd.Series:
+        '''Transforms predictions to unlogged vals.'''
+        predictions_unlogged = np.exp(predictions_logged) - 1
+        return predictions_unlogged
+        
+    def goodness_fit(predictions) -> np.array:
+        '''Calculates root mean square logged error.'''
+        return np.sqrt(mean_squared_log_error(predictions))
 
 
