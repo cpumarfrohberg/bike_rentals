@@ -1,14 +1,17 @@
 import pandas as pd
 import pytest
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
-transformable = pd.read_csv('./data/Tabla_01_English_Unique_postEDA.csv', index_col = 0, parse_dates = True)
-PATH = './artifacts/X_fe_col_names.csv'
-WEIGHTS = {0:0.41, 1:0.59}
+#TODO make function for reading in both datasets
+transformable = pd.read_csv('./data/train.csv', index_col = 0, parse_dates = True)
 
-class ChurnModeler():
-    '''Read, transform, fit and predict.'''
+
+PATH = './artifacts/X_fe_col_names.csv'
+
+#TODO think about how to apply everything to both train as well as test
+class BikeRentModeler():
+    '''Read, split, transform, fit and predict.'''
 
     def __init__(self, path = PATH) -> None:
         self.path = path
@@ -37,28 +40,33 @@ class ChurnModeler():
             'y_train': y_train,
             'y_val': y_val,
             }
-    
-    def split_data(self, X, y) -> dict:
-        '''Returns dict consisting of split data (incl. timestamps).'''
-        X_train, X_val, y_train, y_val = train_test_split(X, y, random_state = 42)
-        return {
-            'X_train': X_train, 
-            'X_val': X_val,
-            'y_train': y_train,
-            'y_val': y_val,
-            }
 
-    def model_fit(self, X_train, y_train, weights):
-        '''Returns fitted Logistic Regression model.'''
-        clf_LR = LogisticRegression(class_weight = weights, random_state=42) 
-        clf_LR.fit(X_train, y_train)
-        return clf_LR
+    def model_fit(self, X_train, y_train):
+        '''Returns fitted Linear ression model.'''
+        linreg = LinearRegression(random_state=42) 
+        linreg.fit(X_train, y_train)
+        return linreg
 
-    def predictions(self, fit_model, X):
+    def predictions(self, fit_model, X) -> int:
         '''Returns model predictions.'''
-        clf = fit_model
-        return clf.predict(X)
+        Lin_Reg = fit_model
+        return Lin_Reg.predict(X)
 
-def test_sparsity():
-    assert [(transformable.to_numpy() == 0) > 0.5]
+    #TODO implement the following methods
+    def interpolator():
+        '''Fill hourly vals for registered and casual.'''
+        pass
+
+    def label_transformer():
+        '''Transforms labels to logged vals.'''
+        pass
+
+    def bring_back_transformer():
+        '''Transforms predictions to unlogged vals.'''
+        pass
+
+    def metric_builder():
+        '''Calculates root mean square logged error.'''
+        pass
+
 
