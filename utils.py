@@ -31,12 +31,11 @@ PATH_TRANSFORMED_DATA = '../artifacts/'
 class BikeRentPredictor():
     '''Read, split, transform, fit and predict.'''
 
-    #TODO: check syntax attributes (i.e. drop initializer?)
+    #TODO: check syntax attributes (i.e. drop initializer altogether?)
     def __init__(self) -> None:
         self.path_initial = PATH_INITIAL_DATA
         self.path_transformed = PATH_TRANSFORMED_DATA
 
-    #TODO: check syntax for "parametrized dataload" (i.e. placeholder)
     def read_for_EDA(self) -> pd.DataFrame:
         '''Returns dict with feature matrix and labels as values.'''
         loadable = ['Xtrain', 'Xval']
@@ -45,16 +44,16 @@ class BikeRentPredictor():
             concatenated = pd.concat(df_train, df_val)
         return concatenated
 
-    #TODO:  check if empty list is even necessary! statement check syntax placeholders! 
+    #TODO:  check if empty list is even necessary! 
     def read_for_split(self) -> dict:
         '''Returns dict with feature matrix and labels as values.'''
-        loadable = ['Xtrain', 'Xval']
-        for data in loadable:
-            loaded = list()
+        loadable_datasets = ['Xtrain', 'Xval']
+        for data in loadable_datasets:
+            loaded_datasets = list()
             df_train, df_val = pd.read_csv(f'self.path_initial/{data}.csv', index_col=0, parse_dates=True)
-            loaded.append(df_train)
-            loaded.append(df_val)
-            for data_loaded in loaded:
+            loaded_datasets.append(df_train)
+            loaded_datasets.append(df_val)
+            for data_loaded in loaded_datasets:
                 X_train, X_val = data_loaded.drop(['casual', 'registered', 'count'], axis=1) 
                 y_train, y_val = data_loaded['count']
         return {
@@ -70,31 +69,23 @@ class BikeRentPredictor():
         df['Month'] = df.index.month
         return df
 
-    #TODO implement the following methods
-    def interpolator():
-        '''Fill hourly vals for registered and casual.'''
-        pass
+    def split_timestamp_data(self, X, y) -> dict:
+        '''Returns dict consisting of split data (incl. timestamps).'''
+        X_train, X_val, y_train, y_val = train_test_split(X, y, random_state = 42)
+        X_train_timestamped = self.include_timestamps(X_train)
+        X_val_timestamped = self.include_timestamps(X_val)
+        return {
+            'X_train_fe': X_train_timestamped, 
+            'X_val_fe': X_val_timestamped,
+            'y_train': y_train,
+            'y_val': y_val,
+            }
 
-    #TODO: check if split is even necessary (data has already been split!).
-    # Also: implement manual split based on dates (<=19th and 19th < dates <=30)?
-    # def split_timestamp_data(self, X, y) -> dict:
-    #     '''Returns dict consisting of split data (incl. timestamps).'''
-    #     X_train, X_val, y_train, y_val = train_test_split(X, y, random_state = 42)
-    #     X_train_timestamped = self.include_timestamps(X_train)
-    #     X_val_timestamped = self.include_timestamps(X_val)
-    #     return {
-    #         'X_train_fe': X_train_timestamped, 
-    #         'X_val_fe': X_val_timestamped,
-    #         'y_train': y_train,
-    #         'y_val': y_val,
-    #         }
-
-    #TODO check np method as well as placeholder
     def label_transformer(y_train, y_val) -> pd.Series:
         '''Transforms labels to logged vals.'''
         labels = [y_train, y_val]
         for label in labels:
-            y_train_logged, y_val_logged = np.log1p(f'{label}) 
+            y_train_logged, y_val_logged = np.log1p(f'{label}') 
         return y_train_logged, y_val_logged
 
     def model_fit(self, X_train, y_train_logged) -> LinearRegression():
@@ -109,7 +100,6 @@ class BikeRentPredictor():
         predictions_logged = fit_model.predict(X_val) 
         return predictions_logged
 
-    #TODO check following two np methods
     def bring_back_transformer(predictions_logged) -> pd.Series:
         '''Transforms predictions to unlogged vals.'''
         predictions_unlogged = np.exp(predictions_logged) - 1
