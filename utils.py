@@ -6,7 +6,6 @@
 @methods:
     - ".read_for_x()" => loaders of datasets: one for EDA, the other for transformed dataset
     - ".include_timestamps()" => first transformer: include timestamps
-        => TODO: include hourly vals (especially since current values are not given for a specific time period)
         => TODO: think of additional FE (e.g. KBinsDiscretizer() or PolynomialFeatures(); note that best submissions to Kaggle don't include that sort of FE...
     - ".model_fit()": fit a vanilla LinReg()
         => TODO: do a GridSearchCV() and create pipeline based on selected best params        
@@ -14,12 +13,7 @@
     - ".predictions()": make predictions on logged labels
     - ".bring_back_transformer()": unlog predictions
     - ".goodness_fit()": rmsle of predictions
-    => TODO: check how to implement ".interpolator()"
     '''
-
-
-
-
 
 import pytest
 
@@ -47,7 +41,7 @@ class BikeRentPredictor():
         '''Returns dict with feature matrix and labels as values.'''
         loadable = ['Xtrain', 'Xval']
         for data in loadable:
-            df_train, df_val = pd.read_csv("self.path_initial/'%s'.csv", data, index_col=0, parse_dates=True)
+            df_train, df_val = pd.read_csv(f'self.path_initial/{data}.csv', index_col=0, parse_dates=True)
             concatenated = pd.concat(df_train, df_val)
         return concatenated
 
@@ -57,7 +51,7 @@ class BikeRentPredictor():
         loadable = ['Xtrain', 'Xval']
         for data in loadable:
             loaded = list()
-            df_train, df_val = pd.read_csv("self.path_initial/'%s'.csv", data, index_col=0, parse_dates=True)
+            df_train, df_val = pd.read_csv(f'self.path_initial/{data}.csv', index_col=0, parse_dates=True)
             loaded.append(df_train)
             loaded.append(df_val)
             for data_loaded in loaded:
@@ -100,7 +94,7 @@ class BikeRentPredictor():
         '''Transforms labels to logged vals.'''
         labels = [y_train, y_val]
         for label in labels:
-            y_train_logged, y_val_logged = np.log1p('%s', label) 
+            y_train_logged, y_val_logged = np.log1p(f'{label}) 
         return y_train_logged, y_val_logged
 
     def model_fit(self, X_train, y_train_logged) -> LinearRegression():
