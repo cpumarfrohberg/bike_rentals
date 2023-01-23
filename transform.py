@@ -17,11 +17,13 @@ from utils import (read_for_split, include_timestamps)
 oh_encodables = ['holiday', 'workingday', 'season']
 binnables = ['Hour', 'Month']
 min_max_scalables = ['weather', 'temp', 'humidity', 'windspeed']
-#TODO: sum vals from 'count', 'registered' and 'casual' and create a new label (being the sum)
 
 oh_encoder = OneHotEncoder(handle_unknown = 'ignore', drop = 'first')#.set_output(transform = 'pandas')
 binner = KBinsDiscretizer(encode='onehot-dense')#.set_output(transform = 'pandas')
 min_max_scaler = MinMaxScaler()#.set_output(transform = 'pandas')
+
+#TODO: sum vals from 'count', 'registered' and 'casual' and create a new label (being the sum)
+#TODO: save labels y_train by dropping DateTime
 
 def main():
         '''Import, transform and save data.'''
