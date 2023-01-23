@@ -28,7 +28,6 @@ PARAMS = {
     'max_depth' : [3, 5, 10]
 }
 
-#TODO: check syntax attributes (i.e. drop initializer altogether?)
 def best_model_identifier(model, params, splits, n_jobs):
     '''Return mean r2-score for optional models.
     Takes untransformed dataset, transforms X_val in each fold and 
