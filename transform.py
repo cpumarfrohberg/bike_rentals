@@ -1,66 +1,61 @@
-from utils import transformable, ChurnModeler
+#transform.py
+'''Transform data.
+Based on GridSearch, use best model for fit on transformed data.'''
 
-import pickle, time, logging
+import time, logging
+logging.basicConfig(level = logging.DEBUG)
 
 import pandas as pd
-import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
 
-from sklearn import set_config
-set_config(transform_output = 'pandas')
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, KBinsDiscretizer
+from sklearn.preprocessing import (MinMaxScaler, OneHotEncoder, KBinsDiscretizer)
 from sklearn.compose import make_column_transformer
 
-logging.basicConfig(level = logging.DEBUG)
+from utils import (read_for_split, include_timestamps, best_model_identifier, PARAMS)
 
-logging.info('prep data for transformation')
-discretizable = ['Client_Age_Years', 'n(Loans)_Outstanding_Maynas', 'n(Loans)_Outstanding_Maynas',
-                'n(Loans)_Outstanding_Other', 'n(Additional_Loans)_Post3Months', 
-                'n(Additional_Loans)_Post6Months','n(Additional_Loans)_Pre3Months', 
-                'n(Additional_Loans)_Pre6Months']
+oh_encodables = ['holiday', 'workingday'] 
+binnables = ['Hour', 'Month']
+min_max_scalables = ['weather', 'temp', 'humidity', 'windspeed']
+#TODO: sum vals from 'count', 'registered' and 'casual' and create a new label (being the sum)
 
-min_max_scalable = ['n(Months)_Since_Last_Disbursement', 'n(Months)_Client_Relationship',
-            'n(Months)_LO_Active_Employee', 'Total_Accumulated_Interest_per_Client', 
-            'n(Months)_Change_LO']
 
-standard_scalable = ['Amount_Last_Disbursement']
+oh_encoder = OneHotEncoder(handle_unknown = 'ignore', drop = 'first').set_output(transform = 'pandas')
+discretizer = KBinsDiscretizer(encode='onehot-dense').set_output(transform = 'pandas')
+min_max_scaler = MinMaxScaler().set_output(transform = 'pandas')
 
-discretizer = KBinsDiscretizer(encode='onehot-dense')
-min_max_scaler = MinMaxScaler()
-standard_scaler = StandardScaler()
+def main():
+        time.sleep(1)
+        logging.debug("create 'Hour' and 'Month' cols")
+        X_train_dict = read_for_split()
+        X_fe_time = include_timestamps(X_train_dict.get('X_train'))
 
-transformable.drop('Client_ID', axis = 1, inplace = True)
+        time.sleep(1)
+        logging.debug('transforming')
+        preprocessor = make_column_transformer( 
+                (oh_encoder, oh_encodables),
+                (discretizer, binnables),
+                (min_max_scaler, min_max_scalables),
+                remainder='passthrough'
+                )
+        X_feature_engineered = preprocessor.fit_transform(X_fe_time)
+
+        time.sleep(3)
+        logging.info(f'transformation concluded: X_fe_col_names created. \
+                Shape: {X_feature_engineered.shape}. Columns: {X_feature_engineered.columns}')
+
+        time.sleep(3)
+        logging.debug('saving X_fe_col_names as .csv-file')
+        X_fe_col_names.to_csv('./artifacts/X_fe_col_names.csv')
+
+        time.sleep(2)
+        logging.info('X_fe_col_names.csv saved')
+
+
 
 if __name__ == '__main__':
-    churn_prepper = ChurnModeler()
-    time.sleep(1)
-    logging.debug('creating month and time cols')
-    X_fe_time = churn_prepper.include_timestamps(transformable)
-    
-    time.sleep(1)
-    logging.debug('transforming')
-    preprocessor = make_column_transformer( 
-            (discretizer, discretizable),
-            (min_max_scaler, min_max_scalable),
-            (standard_scaler, standard_scalable),
-            remainder='passthrough'
-            )
-    X_feature_engineered = preprocessor.fit_transform(X_fe_time)
-
-    time.sleep(1)
-    logging.debug(f'Inserting col names.')
-    X_fe_col_names = pd.DataFrame(X_feature_engineered)
-
-    logging.info(f'transformation concluded: X_fe_col_names created. \
-                Shape: {X_fe_col_names.shape}. Columns: {X_fe_col_names.columns}')
-
-    time.sleep(1)
-    logging.debug('saving X_fe_col_names as .csv-file')
-    X_fe_col_names.to_csv('./artifacts/X_fe_col_names.csv')
- 
-    time.sleep(2)
-    logging.info('X_fe_col_names.csv saved')
+        best_model = best_model_identifier(model, params)
+        main()
 
 
 
