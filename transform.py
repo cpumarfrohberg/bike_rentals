@@ -31,52 +31,51 @@ preprocessor = make_column_transformer(
         )        
 
 #TODO: sum vals from 'count', 'registered' and 'casual' and create a new label (being the sum)
+#TODO: drop 'atemp'!
 
 def main():
         '''Import, transform and save data.'''
         time.sleep(1)
-        logging.debug("create 'Hour' and 'Month' cols")
+        logging.info("Read in data.")
         X_train_dict = read_for_split()
 
+        time.sleep(1)
+        logging.info("Split data.")
         split_data_dict = split_data(X_train_dict['feature_matrix'], X_train_dict['labels'])
-
-        logging.debug(f'Split data and created dict with following keys: {split_data_dict.keys()}')
-
         X_train, X_val, y_train, y_val = split_data_dict.get('X_train'), split_data_dict.get('X_val'), split_data_dict.get('y_train'), split_data_dict.get('y_val')
-        
-        
         time.sleep(3)
         logging.info(f'Sizes of split data: X_train: {X_train.shape}, \
                 X_val: {X_val.shape}, y_train: {y_train.shape}, y_val: {y_val.shape}')
         
         time.sleep(1)
-        logging.info('Creating month and time cols for X_train and X_val')
+        logging.info('Create month and time cols for X_train and X_val')
         X_train_time = include_timestamps(X_train)
         X_val_time = include_timestamps(X_val)
 
         time.sleep(1)
-        logging.debug('transforming')
+        logging.debug('Transform with preprocessor.')
         X_train_fe = preprocessor.fit_transform(X_train_time)
         X_train_fe = pd.DataFrame(X_train_fe, columns = preprocessor.get_feature_names_out())
-        # logging.debug(f'created X_train_fe with the following cols :{X_train_fe.columns} \
-        #                 and shape: {X_train_fe.shape} and the following datatypes: \
-        #                 {X_train_fe.info()}')
+        time.sleep(3)
+        logging.debug(f'Created X_train_fe: {X_train_fe.info()}')
         
         X_val_fe = preprocessor.fit_transform(X_val_time)
         X_val_fe = pd.DataFrame(X_val_fe, columns = preprocessor.get_feature_names_out())
-        logging.debug(f'created X_val_fe with the following cols :{X_val_fe.columns} \
-                        and shape: {X_val_fe.shape} and the following datatypes: \
-                        {X_val_fe.info()}')
+        time.sleep(3)
+        logging.debug(f'Created X_val_fe: {X_val_fe.info()}')
         
         time.sleep(1)
-        logging.info(f'Dropping timestamps of y_train and y_val.')
+        logging.info(f'Drop timestamps of y_train and y_val.')
         y_train = y_train.to_frame()
         y_val = y_val.to_frame()
         y_train.reset_index(inplace = True)
         logging.info(f'Cols of y_train: {y_train.columns} and y_val: {y_val.columns}.')
+        time.sleep(1)
+        logging.info(f'Cols of y_train: {y_train.columns} and y_val: {y_val.columns}.')
         y_train.drop('datetime', axis = 1, inplace = True)
         y_val.reset_index(inplace = True)
         y_val.drop('datetime', axis = 1, inplace = True)
+        logging.info(f'Cols of y_val: {y_train.columns} and y_val: {y_val.columns}.')
         logging.info(f'Shapes of y_train: {y_train.shape} and y_val: {y_val.shape}.')
         
         time.sleep(2)
