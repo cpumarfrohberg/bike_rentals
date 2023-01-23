@@ -21,6 +21,7 @@ min_max_scalables = ['weather', 'temp', 'humidity', 'windspeed']
 oh_encoder = OneHotEncoder(handle_unknown = 'ignore', drop = 'first')#.set_output(transform = 'pandas')
 binner = KBinsDiscretizer(encode='onehot-dense')#.set_output(transform = 'pandas')
 min_max_scaler = MinMaxScaler()#.set_output(transform = 'pandas')
+#TODO: run with .set_output(transform = 'pandas') and transforming DataFrames with .to_dense()
 
 preprocessor = make_column_transformer(
         (oh_encoder, oh_encodables),
@@ -30,7 +31,6 @@ preprocessor = make_column_transformer(
         )        
 
 #TODO: sum vals from 'count', 'registered' and 'casual' and create a new label (being the sum)
-#TODO: save labels y_train by dropping DateTime
 
 def main():
         '''Import, transform and save data.'''
