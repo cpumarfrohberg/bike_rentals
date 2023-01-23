@@ -13,6 +13,7 @@ import pytest
 import pandas as pd
 import numpy as np
 
+from sklearn.model_selection import train_test_split 
 from sklearn.model_selection import GridSearchCV #TODO: evaluate with RandomizedGridSearch
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_log_error
@@ -39,15 +40,10 @@ def best_model_identifier(model, params, splits, n_jobs):
 
 def read_for_split() -> dict:
     '''Returns dict with feature matrix and labels as values.'''
-    data_loaded = pd.read_csv('./data/train.csv', index_col=0, parse_dates=True)
-    X_train, X_val = data_loaded.drop(['casual', 'registered', 'count'], axis=1) 
-    y_train, y_val = data_loaded['count']
-    return {
-        'X_train': X_train, 
-        'X_val': X_val,
-        'y_train': y_train,
-        'y_val': y_val,
-        }
+    X = pd.read_csv('./data/train.csv', index_col=0, parse_dates=True)
+    y = X['count']
+    X.drop(['casual', 'registered', 'count'], axis=1, inplace=True) 
+    return {'feature_matrix': X, 'labels': y}
 
 def include_timestamps(df) -> pd.DataFrame:
     '''Returns DataFrame with time-stamps.'''
@@ -84,3 +80,6 @@ def goodness_fit(predictions) -> np.array:
     return np.sqrt(mean_squared_log_error(predictions))
 
 
+def test_read_for_split():
+    data_loaded = read_for_split()
+    assert type(data_loaded) == dict
