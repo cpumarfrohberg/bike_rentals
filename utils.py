@@ -44,6 +44,16 @@ def read_for_split() -> dict:
     X.drop(['casual', 'registered', 'count'], axis=1, inplace=True) 
     return {'feature_matrix': X, 'labels': y}
 
+def split_data(X, y) -> dict:
+        '''Returns dict consisting of split data (incl. timestamps).'''
+        X_train, X_val, y_train, y_val = train_test_split(X, y, random_state = 42)
+        return {
+            'X_train': X_train, 
+            'X_val': X_val,
+            'y_train': y_train,
+            'y_val': y_val,
+            }
+
 def include_timestamps(df) -> pd.DataFrame:
     '''Returns DataFrame with time-stamps.'''
     df['Hour'] = df.index.hour
