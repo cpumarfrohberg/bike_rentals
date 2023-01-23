@@ -1,5 +1,4 @@
 #main.py
-
 '''Load, transform and fit - long version.'''
 
 import pickle, time, logging
@@ -13,9 +12,7 @@ logging.basicConfig(level = logging.DEBUG)
 from utils import BikeRentPredictor
 
 def main():
-    model_data = BikeRentPredictor()
-    prepped_data = model_data.read_for_split()
-    #TODO: call .include_timestamps() at some point
+    #TODO: load transformed dataset
     split_dict = model_data.split_data(X = prepped_data['feature_matrix'], 
                                                 y = prepped_data['labels'])
     X_train, X_val, y_train, y_val = (split_dict['X_train'], split_dict['X_val'], 
