@@ -14,6 +14,8 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import GridSearchCV #TODO: evaluate with RandomizedGridSearch
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_log_error
 
 PATH_TRANSFORMED_DATA = '../artifacts/'
 
@@ -52,7 +54,7 @@ def include_timestamps(df) -> pd.DataFrame:
     df['Hour'] = df.index.hour
     df['Month'] = df.index.month
     return df
-    
+
 def label_transformer(y_train, y_val) -> pd.Series:
     '''Transforms labels to logged vals.'''
     labels = [y_train, y_val]

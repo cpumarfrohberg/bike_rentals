@@ -46,15 +46,12 @@ def main():
 
         time.sleep(3)
         logging.debug('saving X_fe_col_names as .csv-file')
-        X_fe_col_names.to_csv('./artifacts/X_fe_col_names.csv')
+        X_feature_engineered.to_csv('./artifacts/train_feature_engineered.csv')
 
         time.sleep(2)
         logging.info('X_fe_col_names.csv saved')
 
-
-
 if __name__ == '__main__':
-        best_model = best_model_identifier(model, params)
         main()
 
 
