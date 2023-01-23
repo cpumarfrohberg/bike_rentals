@@ -7,12 +7,14 @@ warnings.filterwarnings("ignore")
 import time, logging
 logging.basicConfig(level = logging.DEBUG)
 
+import pandas as pd
+
 from sklearn.preprocessing import (MinMaxScaler, OneHotEncoder, KBinsDiscretizer)
 from sklearn.compose import make_column_transformer
 
 from utils import (read_for_split, include_timestamps)
 
-oh_encodables = ['holiday', 'workingday']
+oh_encodables = ['holiday', 'workingday', 'season']
 binnables = ['Hour', 'Month']
 min_max_scalables = ['weather', 'temp', 'humidity', 'windspeed']
 #TODO: sum vals from 'count', 'registered' and 'casual' and create a new label (being the sum)
@@ -42,6 +44,7 @@ def main():
         logging.debug(f'created X_fe_time with the following cols :{X_fe_time.columns} \
                         and shape: {X_fe_time.shape} and the following datatypes: \
                         {X_fe_time.info()}')
+        X_feature_engineered = pd.DataFrame(X_feature_engineered, columns = preprocessor.get_feature_names_out())
 
         time.sleep(3)
         logging.debug('saving X_feature_engineered as .csv-file')
