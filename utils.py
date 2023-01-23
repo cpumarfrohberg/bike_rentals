@@ -75,7 +75,7 @@ def bring_back_transformer(predictions_logged) -> pd.Series:
     predictions_unlogged = np.exp(predictions_logged) - 1
     return predictions_unlogged
     
-def goodness_fit(predictions) -> np.array:
+def goodness_of_fit(predictions) -> np.array:
     '''Calculates root mean square logged error.'''
     return np.sqrt(mean_squared_log_error(predictions))
 
