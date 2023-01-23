@@ -1,4 +1,6 @@
-#TODO check all imports, adapt method calls and context manager for model dump
+#main.py
+
+'''Load, transform and fit - long version.'''
 
 import pickle, time, logging
 from warnings import filterwarnings
