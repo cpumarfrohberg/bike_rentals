@@ -22,6 +22,7 @@ oh_encoder = OneHotEncoder(handle_unknown = 'ignore', drop = 'first')#.set_outpu
 binner = KBinsDiscretizer(encode='onehot-dense')#.set_output(transform = 'pandas')
 min_max_scaler = MinMaxScaler()#.set_output(transform = 'pandas')
 
+#TODO: split data in order to extract labels as well 
 #TODO: sum vals from 'count', 'registered' and 'casual' and create a new label (being the sum)
 #TODO: save labels y_train by dropping DateTime
 
@@ -30,6 +31,7 @@ def main():
         time.sleep(1)
         logging.debug("create 'Hour' and 'Month' cols")
         X_train_dict = read_for_split()
+
         X_fe_time = include_timestamps(X_train_dict.get('feature_matrix'))
         logging.debug(f'created X_fe_time with the following cols :{X_fe_time.info()} \
                         and shape: {X_fe_time.shape}')
