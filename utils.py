@@ -18,7 +18,7 @@ from sklearn.model_selection import GridSearchCV #TODO: evaluate with Randomized
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_log_error
 
-PATH_TRANSFORMED_DATA = '../artifacts/'
+datasets = ['X_train_transformed', 'X_val_transformed', 'y_train', 'y_val']
 
 PARAMS = {
     'models' : ['LinearRegression', 'RandomForestRegressor', 'PoissonRegressor'],
