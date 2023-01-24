@@ -28,12 +28,17 @@ PARAMS = {
     'max_depth' : [3, 5, 10]
 }
 
-def best_model_identifier(model, params, splits, n_jobs):
+def best_model_identifier(model, params, splits, n_jobs, X_train, y_train, score):
     '''Return mean r2-score for optional models.
     Takes untransformed dataset, transforms X_val in each fold and 
     returns score.'''
-    validator = GridSearchCV(estimator = model, param_grid = params, cv = splits, n_jobs = n_jobs) 
-    validator.fit()
+    validator = GridSearchCV(
+        estimator = model, 
+        param_grid = params, 
+        cv = splits, 
+        n_jobs = n_jobs,
+        scoring = score) 
+    validator.fit(X_train, y_train)
     best_model = validator.best_estimator_ 
     return best_model
 
